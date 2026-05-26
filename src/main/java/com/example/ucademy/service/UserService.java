@@ -2,6 +2,7 @@ package com.example.ucademy.service;
 
 import com.example.ucademy.dto.CreateUserDto;
 import com.example.ucademy.dto.UserResponseDto;
+import com.example.ucademy.model.Role;
 import com.example.ucademy.model.User;
 import com.example.ucademy.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,6 +22,7 @@ public class UserService {
         responseDto.setFirstName(user.getFirstName());
         responseDto.setLastName(user.getLastName());
         responseDto.setEmail(user.getEmail());
+        responseDto.setRole(user.getRole());
 
         return responseDto;
     }
@@ -39,6 +41,9 @@ public class UserService {
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
         user.setEmail(dto.getEmail());
+        if (dto.getRole() != null && !dto.getRole().isBlank()) {
+            user.setRole(Role.valueOf(dto.getRole().toUpperCase()));
+        }
 
         String hashedPassword = passwordEncoder.encode(dto.getPassword());
         user.setPassword(hashedPassword);
@@ -59,5 +64,13 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("User with this id does not exist"));
 
         return mapToResponseDto(user);
+    }
+
+    public void deleteUserById(Long id) {
+        if (!userRepository.existsById(id)) {
+            throw new IllegalArgumentException("User with this id does not exist");
+        }
+
+        userRepository.deleteById(id);
     }
 }

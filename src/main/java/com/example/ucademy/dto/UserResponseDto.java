@@ -1,5 +1,6 @@
 package com.example.ucademy.dto;
 
+import com.example.ucademy.model.Role;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,4 +10,5 @@ public class UserResponseDto {
     private String firstName;
     private String lastName;
     private String email;
+    private Role role;
 }
