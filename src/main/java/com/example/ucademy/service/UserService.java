@@ -7,6 +7,9 @@ import com.example.ucademy.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class UserService {
     private final UserRepository userRepository;
@@ -44,5 +47,9 @@ public class UserService {
         return mapToResponseDto(user);
     }
 
+    public List<UserResponseDto> getAllUsers() {
+        List<User> users = userRepository.findAll();
 
+        return users.stream().map(this::mapToResponseDto).collect(Collectors.toList());
+    }
 }
