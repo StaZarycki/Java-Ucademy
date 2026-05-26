@@ -31,13 +31,8 @@ services:
       - postgres-db
     networks:
       - spring-postgres-net
-    develop:
-      watch:
-        - action: sync
-          path: ./src/main/resources/static
-          target: /app/resources/static
-        - action: rebuild
-          path: ./pom.xml
+    volumes:
+      - ./target/classes:/app/classes
 
 volumes:
   postgres_data:

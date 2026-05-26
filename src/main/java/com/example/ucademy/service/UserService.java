@@ -8,6 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -51,5 +52,12 @@ public class UserService {
         List<User> users = userRepository.findAll();
 
         return users.stream().map(this::mapToResponseDto).collect(Collectors.toList());
+    }
+
+    public UserResponseDto getUserById(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("User with this id does not exist"));
+
+        return mapToResponseDto(user);
     }
 }
