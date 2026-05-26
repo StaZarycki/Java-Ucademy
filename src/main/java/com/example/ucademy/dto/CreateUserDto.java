@@ -1,7 +1,10 @@
 package com.example.ucademy.dto;
 
+import com.example.ucademy.dto.validation.ValueOfEnum;
+import com.example.ucademy.model.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 
@@ -17,4 +20,7 @@ public class CreateUserDto {
     @NotBlank
     @Size(min = 8)
     private String password;
+
+    @ValueOfEnum(enumClass = Role.class, message = "Role must be either USER or ADMIN")
+    private String role;
 }

@@ -22,4 +22,8 @@ public class User {
     private String email;
     @Column(nullable = false)
     private String password;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, columnDefinition = "VARCHAR(25) DEFAULT 'USER'")
+    private Role role = Role.USER;
 }
