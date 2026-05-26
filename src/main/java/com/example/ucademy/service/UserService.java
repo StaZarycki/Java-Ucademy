@@ -73,4 +73,11 @@ public class UserService {
 
         userRepository.deleteById(id);
     }
+
+    public UserResponseDto getCurrentUser(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Current user context not found"));
+
+        return mapToResponseDto(user);
+    }
 }
