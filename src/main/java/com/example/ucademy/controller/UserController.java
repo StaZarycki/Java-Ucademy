@@ -30,8 +30,16 @@ public class UserController {
     }
 
     @GetMapping
+    @Operation(method = "GET", summary = "Get all users", description = "Get all users from the database")
     public ResponseEntity<List<UserResponseDto>> getAllUsers() {
         List<UserResponseDto> response = userService.getAllUsers();
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    @Operation(method = "GET", summary = "Get user by id", description = "Get user by id")
+    public ResponseEntity<UserResponseDto> getUserById(@PathVariable Long id) {
+        UserResponseDto response = userService.getUserById(id);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
