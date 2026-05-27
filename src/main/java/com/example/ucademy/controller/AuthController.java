@@ -6,6 +6,7 @@ import com.example.ucademy.model.User;
 import com.example.ucademy.repository.UserRepository;
 import com.example.ucademy.security.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/auth")
+@Tag(name = "Auth", description = "Auth Controller")
 public class AuthController {
     private final UserRepository userRepository;
     private final JwtService jwtService;

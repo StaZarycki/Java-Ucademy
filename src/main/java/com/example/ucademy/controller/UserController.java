@@ -1,7 +1,7 @@
 package com.example.ucademy.controller;
 
-import com.example.ucademy.dto.CreateUserDto;
-import com.example.ucademy.dto.UserResponseDto;
+import com.example.ucademy.dto.user.CreateUserDto;
+import com.example.ucademy.dto.user.UserResponseDto;
 import com.example.ucademy.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

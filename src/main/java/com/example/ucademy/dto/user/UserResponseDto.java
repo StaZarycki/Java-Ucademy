@@ -1,4 +1,4 @@
-package com.example.ucademy.dto;
+package com.example.ucademy.dto.user;
 
 import com.example.ucademy.model.Role;
 import lombok.Getter;
