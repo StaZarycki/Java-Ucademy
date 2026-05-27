@@ -50,4 +50,18 @@ public class CourseController {
         response.put("message", "Successfully enrolled to the course");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+    @PatchMapping("/{courseId}/progress")
+    @Operation(method = "PATCH", summary = "Update progress", description = "Update course progress")
+    public ResponseEntity<Map<String, String>> updateCourseProgress(
+            @PathVariable("courseId") Long courseId,
+            @RequestParam("percentage") int percentage,
+            @AuthenticationPrincipal String email
+    ) {
+        courseService.updateProgress(email, courseId, percentage);
+
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Successfully updated progress");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }

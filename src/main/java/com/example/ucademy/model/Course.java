@@ -21,6 +21,6 @@ public class Course {
     @Column(nullable = false, name = "course_name")
     private String courseName;
 
-    @ManyToMany(mappedBy = "courses")
-    private Set<User> users = new HashSet<>();
+    @OneToMany(mappedBy = "course", orphanRemoval = true)
+    private Set<CourseProgress> courseProgresses = new HashSet<>();
 }

@@ -30,21 +30,29 @@ public class User {
     @Column(nullable = false, columnDefinition = "VARCHAR(25) DEFAULT 'USER'")
     private Role role = Role.USER;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(
-            name = "users_courses",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "course_id")
-    )
-    private Set<Course> courses = new HashSet<>();
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<CourseProgress> courseProgresses = new HashSet<>();
 
-    public void addCourse(Course course) {
-        this.courses.add(course);
-        course.getUsers().add(this);
+    public void enrollInCourse(Course course) {
+        CourseProgress courseProgress = new CourseProgress();
+        courseProgress.setUser(this);
+        courseProgress.setCourse(course);
+
+        this.courseProgresses.add(courseProgress);
+        course.getCourseProgresses().add(courseProgress);
     }
 
     public void removeCourse(Course course) {
-        this.courses.remove(course);
-        course.getUsers().remove(this);
+        CourseProgress toRemove = this.courseProgresses.stream()
+                .filter(p -> p.getCourse().equals(course))
+                .findFirst()
+                .orElse(null);
+
+        if (toRemove != null) {
+            this.courseProgresses.remove(toRemove);
+            course.getCourseProgresses().remove(toRemove);
+            toRemove.setUser(null);
+            toRemove.setCourse(null);
+        }
     }
 }
