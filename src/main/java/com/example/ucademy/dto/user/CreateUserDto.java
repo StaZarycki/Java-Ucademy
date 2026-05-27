@@ -1,10 +1,9 @@
-package com.example.ucademy.dto;
+package com.example.ucademy.dto.user;
 
 import com.example.ucademy.dto.validation.ValueOfEnum;
 import com.example.ucademy.model.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 

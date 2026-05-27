@@ -1,7 +1,7 @@
 package com.example.ucademy.service;
 
-import com.example.ucademy.dto.CreateUserDto;
-import com.example.ucademy.dto.UserResponseDto;
+import com.example.ucademy.dto.user.CreateUserDto;
+import com.example.ucademy.dto.user.UserResponseDto;
 import com.example.ucademy.model.Role;
 import com.example.ucademy.model.User;
 import com.example.ucademy.repository.UserRepository;
@@ -9,7 +9,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
