@@ -5,14 +5,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-
 @Entity
-@Table(name = "users_courses_progress")
+@Table(name = "users_courses_grades")
 @Getter
 @Setter
 @NoArgsConstructor
-public class CourseProgress {
+public class CourseGrade {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,12 +24,5 @@ public class CourseProgress {
     private Course course;
 
     @Column(nullable = false)
-    private int progressPercentage = 0;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "VARCHAR(25) DEFAULT 'IN_PROGRESS'")
-    private Status status = Status.IN_PROGRESS;
-
-    private LocalDateTime startedAt = LocalDateTime.now();
-    private LocalDateTime completedAt;
+    private int grade;
 }
