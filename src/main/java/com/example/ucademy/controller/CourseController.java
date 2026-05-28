@@ -100,4 +100,15 @@ public class CourseController {
 
         return new  ResponseEntity<>(HttpStatus.CREATED);
     }
+
+    @PostMapping("/{courseId}/issueCertificate")
+    @Operation(method = "POST", summary = "Issue a certificate", description = "Issue a new certificate for a user")
+    public ResponseEntity<Void> issueCertificate(
+            @PathVariable Long courseId,
+            @RequestParam("userEmail") String userEmail
+    ) {
+        courseService.issueCertificate(userEmail, courseId);
+
+        return new  ResponseEntity<>(HttpStatus.CREATED);
+    }
 }

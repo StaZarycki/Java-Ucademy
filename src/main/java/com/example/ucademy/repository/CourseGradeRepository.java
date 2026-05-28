@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface CourseGradesRepository extends JpaRepository<CourseGrade, Long> {
+public interface CourseGradeRepository extends JpaRepository<CourseGrade, Long> {
     List<CourseGrade> findByUserEmailAndCourseId(String email, Long courseId);
 }
