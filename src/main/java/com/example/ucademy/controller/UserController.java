@@ -1,6 +1,7 @@
 package com.example.ucademy.controller;
 
 import com.example.ucademy.dto.user.CreateUserDto;
+import com.example.ucademy.dto.user.UserCertificatesResponseDto;
 import com.example.ucademy.dto.user.UserResponseDto;
 import com.example.ucademy.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -56,5 +57,13 @@ public class UserController {
     public ResponseEntity<Void> deleteUserById(@PathVariable Long id) {
         userService.deleteUserById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping("/certificates")
+    @Operation(method = "GET", summary = "Get current user's certificates", description = "Get current user's certificates")
+    public ResponseEntity<UserCertificatesResponseDto> getCurrentUserCertificates(@AuthenticationPrincipal String email) {
+        UserCertificatesResponseDto response = userService.getUserCertificates(email);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

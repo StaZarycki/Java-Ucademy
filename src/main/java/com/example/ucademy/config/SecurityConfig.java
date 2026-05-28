@@ -41,6 +41,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/courses/*/issueCertificate").hasRole("ADMIN")
 
                         .requestMatchers("/api/users/me").authenticated()
+                        .requestMatchers("/api/users/certificates").authenticated()
                         .requestMatchers("/api/courses/**").authenticated()
 
                         .requestMatchers("/api/users/**", "/api/auth/login").permitAll()
