@@ -1,5 +1,6 @@
 package com.example.ucademy.service;
 
+import com.example.ucademy.dto.course.CourseProgressResponseDto;
 import com.example.ucademy.dto.course.CourseResponseDto;
 import com.example.ucademy.dto.course.CreateCourseDto;
 import com.example.ucademy.model.Course;
@@ -29,6 +30,28 @@ public class CourseService {
         return responseDto;
     }
 
+    private CourseProgressResponseDto mapToProgressResponseDto(CourseProgress courseProgress) {
+        CourseProgressResponseDto responseDto = new CourseProgressResponseDto();
+        responseDto.setCourseId(courseProgress.getCourse().getId());
+        responseDto.setCourseName(courseProgress.getCourse().getCourseName());
+        responseDto.setProgress(courseProgress.getProgressPercentage());
+        responseDto.setStatus(courseProgress.getStatus().toString());
+
+        return responseDto;
+    }
+
+    private void ValidateUserEnrollment(String email, Long courseId) {
+        userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        courseRepository.findById(courseId)
+                .orElseThrow(() -> new IllegalArgumentException("Course not found"));
+
+        boolean enrolled = courseProgressRepository.findByUserEmailAndCourseId(email, courseId).isPresent();
+        if (!enrolled) {
+            throw new IllegalArgumentException("User is not enrolled to the course");
+        }
+    }
+
     public CourseService(CourseRepository courseRepository, UserRepository userRepository, CourseProgressRepository courseProgressRepository) {
         this.courseRepository = courseRepository;
         this.userRepository = userRepository;
@@ -48,6 +71,15 @@ public class CourseService {
         List<Course> courses = courseRepository.findAll();
 
         return courses.stream().map(this::mapToResponseDto).collect(Collectors.toList());
+    }
+
+    public CourseProgressResponseDto getCourseProgress(String email, Long courseId) {
+        ValidateUserEnrollment(email, courseId);
+
+        CourseProgress courseProgress = courseProgressRepository.findByUserEmailAndCourseId(email, courseId)
+                .orElseThrow(() -> new IllegalArgumentException("Course progress not found"));
+
+        return mapToProgressResponseDto(courseProgress);
     }
 
     @Transactional

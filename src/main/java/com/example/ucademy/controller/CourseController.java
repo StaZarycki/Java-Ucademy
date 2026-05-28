@@ -1,5 +1,6 @@
 package com.example.ucademy.controller;
 
+import com.example.ucademy.dto.course.CourseProgressResponseDto;
 import com.example.ucademy.dto.course.CourseResponseDto;
 import com.example.ucademy.dto.course.CreateCourseDto;
 import com.example.ucademy.service.CourseService;
@@ -41,7 +42,7 @@ public class CourseController {
     @PostMapping("/{courseId}/enroll")
     @Operation(method = "POST", summary = "Enroll", description = "Enroll currently logged in user to the course")
     public ResponseEntity<Map<String, String>> enrollToCourse(
-            @PathVariable("courseId") Long courseId,
+            @PathVariable Long courseId,
             @AuthenticationPrincipal String email
     ) {
         courseService.enrollUserToCourse(email, courseId);
@@ -54,7 +55,7 @@ public class CourseController {
     @PatchMapping("/{courseId}/progress")
     @Operation(method = "PATCH", summary = "Update progress", description = "Update course progress")
     public ResponseEntity<Map<String, String>> updateCourseProgress(
-            @PathVariable("courseId") Long courseId,
+            @PathVariable Long courseId,
             @RequestParam("percentage") int percentage,
             @AuthenticationPrincipal String email
     ) {
@@ -62,6 +63,17 @@ public class CourseController {
 
         Map<String, String> response = new HashMap<>();
         response.put("message", "Successfully updated progress");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/{courseId}/progress")
+    @Operation(method = "GET", summary = "Get progress", description = "Get current course progress")
+    public ResponseEntity<CourseProgressResponseDto> getCourseProgress(
+            @PathVariable Long courseId,
+            @AuthenticationPrincipal String email
+    ) {
+        CourseProgressResponseDto response = courseService.getCourseProgress(email, courseId);
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
