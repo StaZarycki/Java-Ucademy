@@ -5,10 +5,7 @@ import com.example.ucademy.dto.course.CourseProgressResponseDto;
 import com.example.ucademy.dto.course.CourseResponseDto;
 import com.example.ucademy.dto.course.CreateCourseDto;
 import com.example.ucademy.model.*;
-import com.example.ucademy.repository.CourseGradesRepository;
-import com.example.ucademy.repository.CourseProgressRepository;
-import com.example.ucademy.repository.CourseRepository;
-import com.example.ucademy.repository.UserRepository;
+import com.example.ucademy.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +19,8 @@ public class CourseService {
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
     private final CourseProgressRepository courseProgressRepository;
-    private final CourseGradesRepository courseGradesRepository;
+    private final CourseGradeRepository courseGradesRepository;
+    private final CourseCertificateRepository courseCertificateRepository;
 
     private CourseResponseDto mapToResponseDto(Course course) {
         CourseResponseDto responseDto = new CourseResponseDto();
@@ -57,12 +55,14 @@ public class CourseService {
             CourseRepository courseRepository,
             UserRepository userRepository,
             CourseProgressRepository courseProgressRepository,
-            CourseGradesRepository courseGradesRepository
+            CourseGradeRepository courseGradesRepository,
+            CourseCertificateRepository courseCertificateRepository
     ) {
         this.courseRepository = courseRepository;
         this.userRepository = userRepository;
         this.courseProgressRepository = courseProgressRepository;
         this.courseGradesRepository = courseGradesRepository;
+        this.courseCertificateRepository = courseCertificateRepository;
     }
 
     public CourseResponseDto createCourse(CreateCourseDto dto) {
@@ -164,5 +164,20 @@ public class CourseService {
         courseGrade.setGrade(grade);
 
         courseGradesRepository.save(courseGrade);
+    }
+
+    @Transactional
+    public void issueCertificate(String email, Long courseId) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new IllegalArgumentException("Course not found"));
+
+        CourseCertificate courseCertificate = new CourseCertificate();
+        courseCertificate.setUser(user);
+        courseCertificate.setCourse(course);
+
+        courseCertificateRepository.save(courseCertificate);
     }
 }

@@ -1,13 +1,18 @@
 package com.example.ucademy.service;
 
+import com.example.ucademy.dto.course.CourseResponseDto;
 import com.example.ucademy.dto.user.CreateUserDto;
+import com.example.ucademy.dto.user.UserCertificatesResponseDto;
 import com.example.ucademy.dto.user.UserResponseDto;
+import com.example.ucademy.model.CourseCertificate;
 import com.example.ucademy.model.Role;
 import com.example.ucademy.model.User;
+import com.example.ucademy.repository.CourseCertificateRepository;
 import com.example.ucademy.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,6 +20,7 @@ import java.util.stream.Collectors;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final CourseCertificateRepository  courseCertificateRepository;
 
     private UserResponseDto mapToResponseDto(User user) {
         UserResponseDto responseDto = new UserResponseDto();
@@ -26,9 +32,14 @@ public class UserService {
         return responseDto;
     }
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(
+            UserRepository userRepository,
+            PasswordEncoder passwordEncoder,
+            CourseCertificateRepository courseCertificateRepository
+    ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.courseCertificateRepository = courseCertificateRepository;
     }
 
     public UserResponseDto createUser(CreateUserDto dto) {
@@ -78,5 +89,23 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("Current user context not found"));
 
         return mapToResponseDto(user);
+    }
+
+    public UserCertificatesResponseDto getUserCertificates(String email) {
+        List<CourseCertificate> certificates = courseCertificateRepository.findAllByUserEmail(email);
+
+        UserCertificatesResponseDto responseDto = new UserCertificatesResponseDto();
+        responseDto.setCourses(certificates
+                .stream()
+                .map(CourseCertificate::getCourse)
+                        .map(course -> {
+                            CourseResponseDto courseResponseDto = new CourseResponseDto();
+                            courseResponseDto.setCourseName(course.getCourseName());
+
+                            return courseResponseDto;
+                        })
+                .collect(Collectors.toList()));
+
+        return responseDto;
     }
 }
