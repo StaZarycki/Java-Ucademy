@@ -1,5 +1,6 @@
 package com.example.ucademy.controller;
 
+import com.example.ucademy.dto.course.CourseGradesResponseDto;
 import com.example.ucademy.dto.course.CourseProgressResponseDto;
 import com.example.ucademy.dto.course.CourseResponseDto;
 import com.example.ucademy.dto.course.CreateCourseDto;
@@ -75,5 +76,28 @@ public class CourseController {
         CourseProgressResponseDto response = courseService.getCourseProgress(email, courseId);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/{courseId}/grades")
+    @Operation(method = "GET", summary = "Get grades", description = "Get grades for the current course")
+    public ResponseEntity<CourseGradesResponseDto> getCourseGrades(
+            @PathVariable Long courseId,
+            @AuthenticationPrincipal String email
+    ) {
+        CourseGradesResponseDto response = courseService.getCourseGrades(email, courseId);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("/{courseId}/grades")
+    @Operation(method = "POST", summary = "Add grade", description = "Add new grade to the course")
+    public ResponseEntity<Void> addGrade(
+            @PathVariable Long courseId,
+            @AuthenticationPrincipal String email,
+            @RequestParam("grade") int grade
+    ) {
+        courseService.addCourseGrade(email, courseId, grade);
+
+        return new  ResponseEntity<>(HttpStatus.CREATED);
     }
 }
