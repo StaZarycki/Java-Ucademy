@@ -42,10 +42,10 @@ public class SecurityConfig {
 
                         .requestMatchers("/api/users/me").authenticated()
                         .requestMatchers("/api/users/certificates").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/courses").permitAll()
                         .requestMatchers("/api/courses/**").authenticated()
 
                         .requestMatchers("/api/users/**", "/api/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/courses").permitAll()
 
                         .anyRequest().authenticated()
                 )
