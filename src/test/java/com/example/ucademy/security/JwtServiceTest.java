@@ -22,6 +22,9 @@ class JwtServiceTest {
     @BeforeEach
     void setUp() {
         jwtService = new JwtService();
+        ReflectionTestUtils.setField(jwtService, "secretKey", "MTIzNDU2Nzg5MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTI=");
+        ReflectionTestUtils.setField(jwtService, "jwtExpirationMs", 86400000L);
+        
         testUser = new User();
         testUser.setEmail("test@example.com");
         testUser.setRole(Role.USER);
@@ -64,8 +67,8 @@ class JwtServiceTest {
 
     @Test
     void isTokenValid_ExpiredToken_ReturnsFalse() {
-        // Manually create an expired token using the same key from jwtService
-        SecretKey key = (SecretKey) ReflectionTestUtils.getField(jwtService, "jwtSecretKey");
+        // Use the internal getSigningKey to ensure we use the same key for manual token creation
+        SecretKey key = (SecretKey) ReflectionTestUtils.invokeMethod(jwtService, "getSigningKey");
         
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", Role.USER.name());
@@ -77,10 +80,6 @@ class JwtServiceTest {
                 .expiration(new Date(System.currentTimeMillis() - 5000))
                 .signWith(key)
                 .compact();
-
-        // extractAllClaims (called by isTokenExpired) will throw ExpiredJwtException
-        // but isTokenValid catches exceptions? No, JwtService doesn't catch them.
-        // Actually JwtService's extractAllClaims will throw.
         
         assertThrows(io.jsonwebtoken.ExpiredJwtException.class, () -> jwtService.isTokenValid(expiredToken, testUser.getEmail()));
     }
