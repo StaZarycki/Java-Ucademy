@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -108,5 +109,85 @@ class CourseControllerIntegrationTest extends BaseIntegrationTest {
                         .header(HttpHeaders.AUTHORIZATION, userToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message", is("Successfully enrolled to the course")));
+    }
+
+    @Test
+    void updateCourseProgress_Success() throws Exception {
+        Course course = new Course();
+        course.setCourseName("Java Programming");
+        course = courseRepository.save(course);
+
+        // First enroll
+        mockMvc.perform(post("/api/courses/" + course.getId() + "/enroll")
+                        .header(HttpHeaders.AUTHORIZATION, userToken))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(patch("/api/courses/" + course.getId() + "/progress")
+                        .header(HttpHeaders.AUTHORIZATION, userToken)
+                        .param("percentage", "50"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message", is("Successfully updated progress")));
+    }
+
+    @Test
+    void updateCourseProgress_InvalidPercentage_BadRequest() throws Exception {
+        mockMvc.perform(patch("/api/courses/1/progress")
+                        .header(HttpHeaders.AUTHORIZATION, userToken)
+                        .param("percentage", "101"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("Invalid percentage (must be between 0 and 100)")));
+    }
+
+    @Test
+    void getCourseProgress_Success() throws Exception {
+        Course course = new Course();
+        course.setCourseName("Java Programming");
+        course = courseRepository.save(course);
+
+        // First enroll
+        mockMvc.perform(post("/api/courses/" + course.getId() + "/enroll")
+                        .header(HttpHeaders.AUTHORIZATION, userToken))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/api/courses/" + course.getId() + "/progress")
+                        .header(HttpHeaders.AUTHORIZATION, userToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.courseName", is("Java Programming")))
+                .andExpect(jsonPath("$.progress", is(0)));
+    }
+
+    @Test
+    void getCourseGrades_Success() throws Exception {
+        Course course = new Course();
+        course.setCourseName("Java Programming");
+        course = courseRepository.save(course);
+
+        // Enroll and add grade
+        mockMvc.perform(post("/api/courses/" + course.getId() + "/enroll")
+                        .header(HttpHeaders.AUTHORIZATION, userToken))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(post("/api/courses/" + course.getId() + "/grades")
+                        .header(HttpHeaders.AUTHORIZATION, userToken)
+                        .param("grade", "95"))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(get("/api/courses/" + course.getId() + "/grades")
+                        .header(HttpHeaders.AUTHORIZATION, userToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.grades", hasSize(1)))
+                .andExpect(jsonPath("$.grades[0]", is(95)));
+    }
+
+    @Test
+    void issueCertificate_Success() throws Exception {
+        Course course = new Course();
+        course.setCourseName("Java Programming");
+        course = courseRepository.save(course);
+
+        mockMvc.perform(post("/api/courses/" + course.getId() + "/issueCertificate")
+                        .header(HttpHeaders.AUTHORIZATION, adminToken)
+                        .param("userEmail", regularUser.getEmail()))
+                .andExpect(status().isCreated());
     }
 }

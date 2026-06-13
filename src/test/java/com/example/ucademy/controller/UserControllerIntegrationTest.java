@@ -15,6 +15,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -91,5 +92,41 @@ class UserControllerIntegrationTest extends BaseIntegrationTest {
                         .header(HttpHeaders.AUTHORIZATION, userToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)));
+    }
+
+    @Test
+    void getUserById_Success() throws Exception {
+        mockMvc.perform(get("/api/users/" + testUser.getId())
+                        .header(HttpHeaders.AUTHORIZATION, userToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.email", is("user@example.com")));
+    }
+
+    @Test
+    void getUserById_NotFound_BadRequest() throws Exception {
+        mockMvc.perform(get("/api/users/999")
+                        .header(HttpHeaders.AUTHORIZATION, userToken))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("User with this id does not exist")));
+    }
+
+    @Test
+    void deleteUserById_Success() throws Exception {
+        User userToDelete = new User();
+        userToDelete.setEmail("delete@example.com");
+        userToDelete.setPassword(passwordEncoder.encode("password"));
+        userToDelete = userRepository.save(userToDelete);
+
+        mockMvc.perform(delete("/api/users/" + userToDelete.getId())
+                        .header(HttpHeaders.AUTHORIZATION, userToken))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void getCurrentUserCertificates_Success() throws Exception {
+        mockMvc.perform(get("/api/users/certificates")
+                        .header(HttpHeaders.AUTHORIZATION, userToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.courses", hasSize(0)));
     }
 }
